@@ -3,6 +3,9 @@ from .models import User
 import re
 from django_redis import get_redis_connection
 
+
+from rest_framework_jwt.settings import api_settings
+
 class CreateUserSerializer(serializers.ModelSerializer):
     """
      创建用户序列化器
@@ -12,10 +15,11 @@ class CreateUserSerializer(serializers.ModelSerializer):
     sms_code = serializers.CharField(label='短信验证码',write_only=True)
     allow = serializers.CharField(label='同意协议',write_only=True)
 
+    token = serializers.CharField(label='登陆状态token',read_only=True) # 增加token字段
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'password2', 'sms_code', 'mobile', 'allow')
+        fields = ('id', 'username', 'password', 'password2', 'sms_code', 'mobile', 'allow','token')
         extra_kwargs={
 
             'username':{
@@ -92,6 +96,13 @@ class CreateUserSerializer(serializers.ModelSerializer):
         user.set_password(validated_data['password'])
 
         user.save()
+
+        # 补充生成记录登录状态的token
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        payload = jwt_payload_handler(user)
+        token = jwt_encode_handler(payload)
+        user.token = token
 
 
         return user
