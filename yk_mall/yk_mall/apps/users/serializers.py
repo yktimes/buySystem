@@ -1,10 +1,11 @@
 from rest_framework import serializers
-from .models import User
+from .models import User,Address
 import re
 from django_redis import get_redis_connection
 
 from celery_tasks.email.tasks import send_verify_email
 from rest_framework_jwt.settings import api_settings
+
 
 class CreateUserSerializer(serializers.ModelSerializer):
     """
@@ -144,3 +145,53 @@ class EmailSerializer(serializers.ModelSerializer):
         send_verify_email.delay(email,verify_url)
 
         return instance
+
+
+class UserAddressSerializer(serializers.ModelSerializer):
+    """
+    用户地址序列化器
+    """
+
+    province = serializers.StringRelatedField(read_only=True)
+    city = serializers.StringRelatedField(read_only=True)
+    district = serializers.StringRelatedField(read_only=True)
+    province_id = serializers.IntegerField(label='省ID', required=True)
+    city_id = serializers.IntegerField(label='市ID', required=True)
+    district_id = serializers.IntegerField(label='区ID', required=True)
+
+    class Meta:
+        model =Address
+        exclude = ('user', 'is_deleted', 'create_time', 'update_time')
+
+
+    def validate_mobile(self,value):
+        if not re.match(r'^1[3-9]\d{9}$',value):
+            raise serializers.ValidationError('手机格式错误')
+
+        # 记得验证完　返回　　怎么老忘！Ｑ！！
+        return value
+
+
+    def create(self,validated_data):
+
+        validated_data['user']=self.context['request'].user
+        return super().create(validated_data)
+
+
+class AddressTitleSerializer(serializers.ModelSerializer):
+    """
+    地址标题
+    """
+    class Meta:
+        model = Address
+        fields = ('title',)
+
+
+
+
+
+
+
+
+
+
