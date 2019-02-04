@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'users.apps.UsersConfig',
     'oauth.apps.OauthConfig',
+    'areas.apps.AreasConfig',
 ]
 
 MIDDLEWARE = [
@@ -262,3 +263,12 @@ EMAIL_HOST_PASSWORD = 'veroflfnsqreffgb'
 EMAIL_USE_TLS = True # 这里必须是 True，否则发送不成功
 #收件人看到的发件人
 EMAIL_FROM = '1162073988@qq.com'
+
+
+# DRF扩展
+REST_FRAMEWORK_EXTENSIONS = {
+    # 缓存时间
+    'DEFAULT_CACHE_RESPONSE_TIMEOUT': 60 * 60,
+    # 缓存存储
+    'DEFAULT_USE_CACHE': 'default',
+}
