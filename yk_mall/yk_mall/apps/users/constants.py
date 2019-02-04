@@ -1,0 +1,13 @@
+# 发送短信token的有效期
+
+SEND_SMS_TOKEN_EXIPIRES = 500
+# 有效激活链接有效时间: s
+VERIFY_EMAIL_TOKEN_EXPIRES = 60*60*24
+
+
+
+# 用户添加收货地址最大数量
+USER_ADDRESS_COUNTS_LIMIT = 20
+
+# 热销商品数量
+USER_BROWSING_HISTORY_COUNTS_LIMIT = 5
