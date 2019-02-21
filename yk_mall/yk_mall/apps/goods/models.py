@@ -2,6 +2,9 @@ from django.db import models
 from yk_mall.utils.models import BaseModel
 
 # Create your models here.
+from ckeditor.fields import RichTextField
+from ckeditor_uploader.fields import RichTextUploadingField
+
 
 class GoodsCategory(BaseModel):
     """
@@ -66,6 +69,9 @@ class Goods(BaseModel):
     sales = models.IntegerField(default=0, verbose_name='销量')
     comments = models.IntegerField(default=0, verbose_name='评价数')
 
+    desc_detail = RichTextUploadingField(default='', verbose_name='详细介绍')
+    desc_pack = RichTextField(default='', verbose_name='包装信息')
+    desc_service = RichTextUploadingField(default='', verbose_name='售后服务')
     class Meta:
         db_table = 'tb_goods'
         verbose_name = '商品'
