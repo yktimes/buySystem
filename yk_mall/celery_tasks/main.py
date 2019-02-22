@@ -12,7 +12,7 @@ celery_app = Celery('yk_mail')
 celery_app.config_from_object('celery_tasks.config')
 
 # 自动注册celery任务
-celery_app.autodiscover_tasks(['celery_tasks.sms', 'celery_tasks.email'])
+celery_app.autodiscover_tasks(['celery_tasks.sms', 'celery_tasks.email','celery_tasks.html'])
 
 
 # 开启celery的命令
