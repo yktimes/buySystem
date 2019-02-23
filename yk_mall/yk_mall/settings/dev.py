@@ -239,6 +239,9 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.BasicAuthentication',
     ),
+
+    # 分页
+    'DEFAULT_PAGINATION_CLASS': 'yk_mall.utils.pagination.StandardResultPagination',
 }
 
 import datetime
