@@ -20,10 +20,14 @@ from rest_framework.documentation import include_docs_urls
 urlpatterns = [
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
     url(r'^admin/', admin.site.urls),
+
+    url(r'^', include('goods.urls')),
     url(r'^', include('verifications.urls')),
     url(r'^', include('users.urls')),
     url(r'^', include('areas.urls')),
+
     url(r'^oauth/', include('oauth.urls')),
+
 
 
 
