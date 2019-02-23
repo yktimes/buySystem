@@ -10,10 +10,11 @@ from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
 
 
-
+from django_redis import get_redis_connection
 from . import constants
 from .models import User
 from . import serializers
+from goods.models import SKU
 # Create your views here.
 
 # url(r'^usernames/(?P<username>\w{5,20})/count/$', views.UsernameCountView.as_view()),
@@ -197,12 +198,42 @@ class AddressViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericVi
 
 
 
+from rest_framework.generics import GenericAPIView
+from goods.serializers import SKUSerializer
+class UserBrowsingHistoryView(mixins.CreateModelMixin,GenericAPIView):
+    """
+    用户浏览历史记录
+    """
+    serializer_class = serializers.AddUserBrowsingHistorySerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request):
+
+        """保存"""
+
+        # 使用序列化器验证数据
+        # 保存 并 返回
+        return self.create(request)
+
+    def get(self,request):
+        user_id = request.user.id
 
 
+        redis_conn = get_redis_connection('history')
+
+        history = redis_conn.lrange('history_%s'%user_id,0,constants.USER_BROWSING_HISTORY_COUNTS_LIMIT-1)
 
 
+        skus = []
+
+        for sku_id in history:
+            sku = SKU.objects.get(id=sku_id)
+            skus.append(sku)
 
 
+        s = SKUSerializer(skus,many=True)
+
+        return Response(s.data)
 
 
 
