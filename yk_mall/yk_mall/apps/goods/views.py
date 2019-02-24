@@ -4,6 +4,7 @@ from rest_framework.generics import ListAPIView
 from rest_framework.filters import OrderingFilter
 from . import serializers
 from .models import SKU
+from .serializers import SKUIndexSerializer
 
 class SKUListView(ListAPIView):
     """
@@ -19,3 +20,13 @@ class SKUListView(ListAPIView):
         s =  SKU.objects.filter(category_id=category_id,is_launched=True)
         print(s)
         return s
+
+from drf_haystack.viewsets import HaystackViewSet
+
+class SKUSearchViewSet(HaystackViewSet):
+    """
+    SKU搜索
+    """
+    index_models = [SKU]
+
+    serializer_class = SKUIndexSerializer
