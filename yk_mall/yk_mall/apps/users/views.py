@@ -9,13 +9,42 @@ from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
 
-
+from rest_framework_jwt.views import ObtainJSONWebToken,jwt_response_payload_handler
+from carts.utils import merge_cookie_cart_to_redis
 from django_redis import get_redis_connection
 from . import constants
 from .models import User
 from . import serializers
 from goods.models import SKU
 # Create your views here.
+from rest_framework_jwt.settings import api_settings
+from datetime import datetime
+
+class UserAuthorizeView(ObtainJSONWebToken):
+    """登录视图"""
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+
+        if serializer.is_valid():
+            # 登录成功
+            user = serializer.object.get('user') or request.user
+            token = serializer.object.get('token')
+            response_data = jwt_response_payload_handler(token, user, request)
+            response = Response(response_data)
+            if api_settings.JWT_AUTH_COOKIE:
+                expiration = (datetime.utcnow() +
+                              api_settings.JWT_EXPIRATION_DELTA)
+                response.set_cookie(api_settings.JWT_AUTH_COOKIE,
+                                    token,
+                                    expires=expiration,
+                                    httponly=True)
+
+            # 补充购物车记录合并的过程: 调用合并购物车记录函数
+            merge_cookie_cart_to_redis(request, user, response)
+
+            return response
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 # url(r'^usernames/(?P<username>\w{5,20})/count/$', views.UsernameCountView.as_view()),
 class UsernameCountView(APIView):
@@ -203,6 +232,11 @@ from goods.serializers import SKUSerializer
 class UserBrowsingHistoryView(mixins.CreateModelMixin,GenericAPIView):
     """
     用户浏览历史记录
+     获取用户浏览记录:
+        1. 从redis中获取用户浏览的商品的id
+        2. 根据商品id获取对应商品的信息
+        3. 将商品的信息序列化并返回
+
     """
     serializer_class = serializers.AddUserBrowsingHistorySerializer
     permission_classes = [IsAuthenticated]

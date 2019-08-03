@@ -16,6 +16,7 @@ from .serializers import OAuthQQUserSerializer
 
 from .exceptions import QQAPIError
 
+from carts.utils import merge_cookie_cart_to_redis
 
 # Create your views here.
 
@@ -28,6 +29,16 @@ logger = logging.getLogger('django')
 # class OAuthQQUserView(GenericAPIView):
 class OAuthQQUserView(CreateAPIView):
     serializer_class = OAuthQQUserSerializer
+
+    def post(self, request, *args, **kwargs):
+        # 调用父类的post
+        response = super().post(request, *args, **kwargs)
+
+        # 补充购物车记录合并：调用合并购物车记录函数
+        user = self.user
+        merge_cookie_cart_to_redis(request, user, response)
+
+        return response
 
     # def post(self, request):
     #     """
@@ -107,7 +118,11 @@ class OAuthQQUserView(CreateAPIView):
                 'token': token
             }
 
-            return Response(resp)
+            # 补充购物车记录合并：调用合并购物车记录函数
+            response = Response(resp)
+            merge_cookie_cart_to_redis(request, user, response)
+
+            return response
 
 
 # GET /oauth/qq/authorization/?next=<url>

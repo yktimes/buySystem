@@ -1,7 +1,8 @@
 from rest_framework import serializers
 from users.models import User
 from .utils import OAuthQQ
-from rest_framework.settings import api_settings
+
+from rest_framework_jwt.settings import api_settings
 from .models import OAuthQQUser
 from django_redis import get_redis_connection
 
@@ -52,6 +53,7 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
         # 短信验证是否正确
         # 获取真实的短信验证码内容
         mobile = attrs['mobile']
+        sms_code = attrs['sms_code']
         redis_conn = get_redis_connection('verify_codes')
         real_sms_code = redis_conn.get('sms_%s' % mobile)  # bytes
 
@@ -95,6 +97,9 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
             password = validated_data['password']
             user = User.objects.create_user(username=mobile, mobile=mobile, password=password)
 
+        # 给视图对象增加一个属性user，保存用户信息，在视图中可以直接通过`视图对象.user`获取用户
+        self.context['view'].user = user
+
         # 保存绑定信息
         openid = validated_data['openid']
         OAuthQQUser.objects.create(
@@ -104,6 +109,7 @@ class OAuthQQUserSerializer(serializers.ModelSerializer):
 
         # 签发jwt token
         # 由服务器签发一个jwt token，保存用户身份信息
+
 
         jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
         jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
