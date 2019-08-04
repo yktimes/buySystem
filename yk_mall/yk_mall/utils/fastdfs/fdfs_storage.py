@@ -24,10 +24,17 @@ class FastDFSStorage(Storage):
 
         self.client_conf = client_conf
 
+    # TODO 关于图片的url
     def _save(self, name, content):
         """
         name: 用户选择上传文件的名称: 1.jpg
         content: 包含上传文件内容的File对象，通过content.read()获取上传文件内容
+
+        在FastDFS中保存文件
+        :param name: 传入的文件名
+        :param content: 文件内容
+        :return: 保存到数据库中的FastDFS的文件名
+
         """
         # 将文件上传到FDFS系统
         client = Fdfs_client(self.client_conf)

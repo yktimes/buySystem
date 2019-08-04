@@ -86,9 +86,6 @@ TEMPLATES = [
 WSGI_APPLICATION = 'yk_mall.wsgi.application'
 
 
-
-
-
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
