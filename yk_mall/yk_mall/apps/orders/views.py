@@ -8,8 +8,9 @@ from rest_framework.generics import GenericAPIView, CreateAPIView
 from rest_framework.permissions import IsAuthenticated
 
 from goods.models import SKU
-from .serializers import OrderSettlementSerializer,SaveOrderSerializer
+from .serializers import OrderSettlementSerializer,SaveOrderSerializer, OrderCommentSerializer, OrdersCommentCommitSerializer
 from users.models import Address
+from .models import  OrderInfo, OrderGoods
 
 class OrderSettlementView(APIView):
     """"""
@@ -102,3 +103,48 @@ class SaveOrderView(CreateAPIView):
     #
     #     # 3. 返回应答，订单创建成功
     #     return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+class OrdersCommentSkuView(APIView):
+    """
+    商品详情页中查看评论信息
+    1.通过url地址获取商品的id。
+
+    2.通过id获取到商品的评论相关信息。
+
+    3.将信息序列化并返回。
+    """
+
+
+    def get(self,request,pk):
+        skus = OrderGoods.objects.filter(sku_id=pk)
+        data = []
+        for sku in skus:
+            user = sku.order.user
+
+            dict = {'username':user.username,"comment":sku.comment,"score":sku.score}
+            data.append(dict)
+
+        return Response(data)
+
+# Create your views here.
+# POST /orders/(?P<order_id>\d+)/comments/
+class OrdersCommentView(GenericAPIView):
+    serializer_class = OrdersCommentCommitSerializer
+    permission_classes = [IsAuthenticated]
+
+    def post(self,request,order_id):
+        order = OrderGoods.objects.filter(order_id=order_id).first()
+        serialzier = self.get_serializer(order,data=request.data)
+        serialzier.is_valid(raise_exception=True)
+        serialzier.save()
+        return Response(serialzier.data)
+
+# GET /orders/(?P<order_id>\d+)/uncommentgoods/
+class OrdersUnCommentView(GenericAPIView):
+    serializer_class = OrderCommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get(self,request,order_id):
+        order = OrderGoods.objects.filter(order_id=order_id)
+        serializer = self.get_serializer(order,many=True)
+        return Response(serializer.data)
