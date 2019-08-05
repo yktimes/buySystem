@@ -40,7 +40,29 @@ var vm = new Vue({
             .catch(error => {
                 alert(error.response.data);
             });
+
+        // 补充获取地址数据的请求
+        axios.get(this.host + '/addresses/', {
+                headers: {
+                    'Authorization': 'JWT ' + this.token
+                },
+                responseType: 'json'
+            })
+            .then(response => {
+                this.addresses = response.data.addresses;
+                this.limit = response.data.limit;
+                this.default_address_id = response.data.default_address_id;
+            })
+            .catch(error => {
+                status = error.response.status;
+                if (status == 401 || status == 403) {
+                    location.href = 'login.html?next=/user_center_site.html';
+                } else {
+                    alert(error.response.data.detail);
+                }
+            })
     },
+    // 侦听属性
     watch: {
         'form_address.province_id': function(){
             if (this.form_address.province_id) {
@@ -140,7 +162,7 @@ var vm = new Vue({
                 }
             }
         },
-           // 保存地址
+        // 保存地址
         save_address: function(){
             if (this.error_receiver || this.error_place || this.error_mobile || this.error_email || !this.form_address.province_id || !this.form_address.city_id || !this.form_address.district_id ) {
                 alert('信息填写有误！');

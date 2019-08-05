@@ -189,6 +189,11 @@ class AddressViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericVi
         address = self.get_object()
 
         address.is_deleted=True
+
+
+        # if user.default_address.pk == address.pk:
+        #     user.default_address=None
+        #     user.save()
         address.save()
 
         return Response(status=status.HTTP_204_NO_CONTENT)
