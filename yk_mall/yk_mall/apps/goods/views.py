@@ -1,15 +1,15 @@
-from django.shortcuts import render
-from rest_framework.generics import ListAPIView
-# Create your views here.
-from rest_framework.filters import OrderingFilter
-from . import serializers
-from .models import SKU
-from .serializers import SKUSerializer, SKUIndexSerializer, OrderGoodsSerializer
+from datetime import datetime
+
 from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
+from rest_framework.filters import OrderingFilter
+
+from . import serializers
+from .models import SKU
+from .serializers import SKUSerializer, SKUIndexSerializer, OrderGoodsSerializer
 from orders.models import OrderGoods, OrderInfo
 
 # GET /orders/user/
@@ -33,16 +33,15 @@ class UserOrdersView(ListModelMixin,GenericViewSet):
         if page is not None:
             serializer = self.get_serializer(page, many=True)
             for ser in serializer.data:
+
                 create_time = ser.get('create_time').split('+')[0]
                 # 原因出现在这里 后面多了个+号，貌似和时区有关
                 # create_time 2019-08-05T18:52:04.420354+08:00
 
-                from datetime import datetime
-
                 # '2018-08-06T10:00:00.000000' 
 
                 date_ = datetime.strptime(create_time, "%Y-%m-%dT%H:%M:%S.%f")
-                print(111111111,date_)
+
                 new_date = "%d-%d-%d  %.02d:%02d:%02d" % (date_.year,date_.month,date_.day,date_.hour,date_.minute,date_.second)
                 ser['create_time']=new_date
 
@@ -53,7 +52,6 @@ class UserOrdersView(ListModelMixin,GenericViewSet):
         serializer = self.get_serializer(order, many=True)
         for ser in serializer.data:
             create_time = ser.get('create_time').split('+')[0]
-            from datetime import datetime, timedelta
 
             # '2018-08-06T10:00:00.000000' 
 
@@ -69,6 +67,8 @@ class UserOrdersView(ListModelMixin,GenericViewSet):
 
         # 3.返回与用户相关的商品信息给前端
         return Response(data)
+
+
 
 
 class SKUListView(ListAPIView):

@@ -273,7 +273,64 @@ class UserBrowsingHistoryView(mixins.CreateModelMixin,GenericAPIView):
         s = SKUSerializer(skus,many=True)
 
         return Response(s.data)
+import json
+from itsdangerous import TimedJSONWebSignatureSerializer as TJWSSerializer, BadData
+from django.conf import settings
 
+# PUT /users/(?P<pk>\d+)/password/
+class UserPasswordChangeView(GenericAPIView):
 
+    serializer_class = serializers.UserPasswordChangeSerializer
+    permission_classes = [IsAuthenticated,]
 
+    def post(self,request,pk):
+        """
+        1.在模型类中实现检验修改密码 token 的方法，取出 data，判断 user_id 是否一样；
+
+        2.判断两次密码是否一样，判断是否是当前用户，返回数据；
+
+        3.更新密码；
+
+        4.返回重置密码成功信息。
+
+        """
+        user = User.objects.filter(id=pk).first()
+        json_str = request.body
+        json_str = json_str.decode()  # python3.6 无需执行此步
+        req_data = json.loads(json_str)
+        access_token = req_data.get('access_token')
+
+        # 对ｔｏｋｅｎ进行解密
+        sec = TJWSSerializer(settings.SECRET_KEY, 300)
+        try:
+            data = sec.loads(access_token)
+        except BadData:
+            return Response('非法请求')
+        user_id = data.get('user_id')
+
+        if user_id == int(pk):
+            # 判断两次密码是否一致
+            if req_data['password'] != req_data['password2']:
+                return Response('两次密码不一样，请仔细检查一下下...')
+            user.set_password(req_data['password'])
+            user.save()
+            return Response({'id':user_id,'username':user.username,'mobile':user.mobile})
+        return Response('非法请求')
+    def put(self,request,pk):
+        """
+        1.获取参数并校验，看原密码是否正确，两次密码是否一致。
+        2.获取当前用户信息，更新到数据库。
+        3.返回响应。
+        """
+        # 1.获取参数并校验，看原密码是否正确，两次密码是否一致。
+        user = request.user
+
+        # 2.获取参数并进行校验
+        serializer = self.get_serializer(user,data = request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # 3.保存修改地址的数据
+        serializer.save()
+        # 4.返回应答，修改成功
+        return Response({'message':'OK'})
 

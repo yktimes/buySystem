@@ -1,6 +1,6 @@
 from django.conf.urls import url
 
-from users import views
+from . import views
 from rest_framework.routers import DefaultRouter
 
 from rest_framework_jwt.views import obtain_jwt_token
@@ -17,7 +17,9 @@ urlpatterns = [
 
     # url(r'^authorizations/$', obtain_jwt_token),
     url(r'^authorizations/$', views.UserAuthorizeView.as_view()),
-    url(r'^browse_histories/$',views.UserBrowsingHistoryView.as_view())
+    url(r'^browse_histories/$',views.UserBrowsingHistoryView.as_view()),
+
+    url(r'^users/(?P<pk>\d+)/password/$',views.UserPasswordChangeView.as_view()),
 ]
 
 

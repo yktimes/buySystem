@@ -93,7 +93,13 @@ var vm = new Vue({
                     .catch(error => {
                         this.order_submitting = false;
                         console.log(error.response.data)
-                        alert(error.response.data[0]);
+                        if (error.response.data.errmsg){
+                            alert(error.response.data.errmsg)
+                        }
+            else{alert(error.response.data[0]);
+
+                        }
+
                     })
             }
         }

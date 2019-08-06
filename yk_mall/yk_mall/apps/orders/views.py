@@ -71,13 +71,44 @@ class OrderSettlementView(APIView):
         return Response(serializer.data)
 
 
-class SaveOrderView(CreateAPIView):
+class SaveOrderView(GenericAPIView):
     """
     保存订单
     """
     permission_classes = [IsAuthenticated]
     serializer_class = SaveOrderSerializer
 
+    def post(self, request):
+        """
+        订单信息的保存
+        1.接收参数并进行校验（参数完整性，地址是否存在，支付方式是否合法）
+        2.创建并保存订单的数据
+        3.返回应答，订单创建成功
+        """
+        # 1.接收参数并进行校验（参数完整性，地址是否存在，支付方式是否合法）
+        address = request.data.get('address')
+        print(request.data)
+
+        if address is None:
+            return Response({'errmsg': '地址不能为空哦'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            addres = Address.objects.get(id=address,is_deleted=False)
+        except Address.DoesNotExist:
+            # raise serializers.ValidationError("地址不能为空")
+            print(11111111)
+            return Response({'errmsg':'地址不能为空哦'},status=status.HTTP_400_BAD_REQUEST)
+
+
+
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        # 2.创建并保存订单的数据
+        serializer.save()
+
+        # 3.返回应答，订单创建成功
+        return Response(serializer.data, status.HTTP_201_CREATED)
     # def post(self, request):
     #     """
     #     订单信息保存(订单创建):

@@ -68,11 +68,6 @@ class SaveOrderSerializer(serializers.ModelSerializer):
 
 
 
-        try:
-            addres = Address.objects.get(id=address.pk,is_deleted=False)
-        except Address.DoesNotExist:
-            raise serializers.ValidationError("地址不能为空")
-        print("address",addres)
 
         print(self.context)
 
