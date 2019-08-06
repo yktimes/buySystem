@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from rest_framework import status
 import random
 from . import constants
+# from yk_mall.utils.aliyunsdk import aliyunsms
 
 from yk_mall.libs.yuntongxun.sms import CCP
 from celery_tasks.sms import tasks as sms_tasks

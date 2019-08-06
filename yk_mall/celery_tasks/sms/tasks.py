@@ -1,17 +1,17 @@
 import logging
-
+from yk_mall.utils.aliyunsdk import aliyunsms
 from celery_tasks.main import celery_app
-from .yuntongxun.sms import CCP
+
 from . import constants
 
 logger = logging.getLogger('django')
 
-# 验证码短信模板
-SMS_CODE_TEMP_ID = 1
+# # 验证码短信模板
+# SMS_CODE_TEMP_ID = 1
 
 
 @celery_app.task(name='send_sms_code')
-def send_sms_code(mobile, code, expires):
+def send_sms_code(mobile, code, expires=None):
     """
     发送短信验证码
     :param mobile: 手机号
@@ -21,8 +21,11 @@ def send_sms_code(mobile, code, expires):
     """
 
     try:
-        ccp = CCP()
-        result = ccp.send_template_sms(mobile, [code, expires], constants.SMS_CODE_TEMP_ID)
+        result = aliyunsms.send_sms(mobile, code)
+        print("短信",result)
+        logger.info("发送验证码短信[正常][ result: %s ]" % result)
+        # ccp = CCP()
+        # result = ccp.send_template_sms(mobile, [code, expires], constants.SMS_CODE_TEMP_ID)
     except Exception as e:
         logger.error("发送验证码短信[异常][ mobile: %s, message: %s ]" % (mobile, e))
     else:

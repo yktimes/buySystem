@@ -1,4 +1,5 @@
-from django.shortcuts import render
+from datetime import datetime
+import json
 
 from rest_framework.views import APIView
 from rest_framework.generics import CreateAPIView,RetrieveAPIView,UpdateAPIView
@@ -8,17 +9,24 @@ from rest_framework import status
 from rest_framework import mixins
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.decorators import action
-
+from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import ObtainJSONWebToken,jwt_response_payload_handler
-from carts.utils import merge_cookie_cart_to_redis
 from django_redis import get_redis_connection
+from itsdangerous import TimedJSONWebSignatureSerializer as TJWSSerializer, BadData
+from django.conf import settings
+from rest_framework.generics import GenericAPIView
+
+from goods.serializers import SKUSerializer
+from carts.utils import merge_cookie_cart_to_redis
 from . import constants
 from .models import User
 from . import serializers
 from goods.models import SKU
 # Create your views here.
-from rest_framework_jwt.settings import api_settings
-from datetime import datetime
+
+
+
+
 
 class UserAuthorizeView(ObtainJSONWebToken):
     """登录视图"""
@@ -232,8 +240,7 @@ class AddressViewSet(mixins.CreateModelMixin, mixins.UpdateModelMixin, GenericVi
 
 
 
-from rest_framework.generics import GenericAPIView
-from goods.serializers import SKUSerializer
+
 class UserBrowsingHistoryView(mixins.CreateModelMixin,GenericAPIView):
     """
     用户浏览历史记录
@@ -273,9 +280,7 @@ class UserBrowsingHistoryView(mixins.CreateModelMixin,GenericAPIView):
         s = SKUSerializer(skus,many=True)
 
         return Response(s.data)
-import json
-from itsdangerous import TimedJSONWebSignatureSerializer as TJWSSerializer, BadData
-from django.conf import settings
+
 
 # PUT /users/(?P<pk>\d+)/password/
 class UserPasswordChangeView(GenericAPIView):
