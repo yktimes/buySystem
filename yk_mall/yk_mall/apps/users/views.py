@@ -177,7 +177,7 @@ class FindPasswdOneView(APIView):
         sec = per + '****' + back
 
 
-        # 做出响应.返回ａｃｃｅｓｓ＿ｔｏｋｅｎ和手机号
+        # 做出响应.返回access_token 和手机号
         return Response({'access_token': access_token,'mobile':sec,"user_id":user.id})
 
 # PUT /users/(?P<pk>\d+)/password/
