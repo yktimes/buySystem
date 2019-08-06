@@ -20,6 +20,10 @@ urlpatterns = [
     url(r'^browse_histories/$',views.UserBrowsingHistoryView.as_view()),
 
     url(r'^users/(?P<pk>\d+)/password/$',views.UserPasswordChangeView.as_view()),
+
+    url(r'^accounts/(?P<username>\w+)/sms/token/$', views.FindPasswdOneView.as_view()),
+    url(r'^sms_codes/$',views.FindPasswdSecondView.as_view()),
+    url(r'^accounts/(?P<username>\w+)/password/token/$', views.FindPasswdThirdView.as_view()),
 ]
 
 
