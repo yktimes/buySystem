@@ -19,6 +19,8 @@ class User(AbstractUser):
         verbose_name = '用户'
         verbose_name_plural = verbose_name
 
+    def __str__(self):
+        return "姓名："+self.username +" 号码"+ self.mobile
 
     def generate_verify_email_url(self):
         """
@@ -80,3 +82,6 @@ class Address(BaseModel):
         verbose_name = '用户地址'
         verbose_name_plural = verbose_name
         ordering = ['-update_time']
+
+    def __str__(self):
+        return "接收者:"+self.receiver+" 地址-"+self.city.name+self.district.name+self.place

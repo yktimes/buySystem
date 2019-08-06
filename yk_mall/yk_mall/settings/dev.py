@@ -34,12 +34,17 @@ ALLOWED_HOSTS = ['api.meiduo.site', '127.0.0.1', 'localhost']
 # Application definition
 
 INSTALLED_APPS = [
+
+    # 'simpleui',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'xadmin',
+    'crispy_forms',
+    'reversion',
     'rest_framework',
     'corsheaders',
     'users.apps.UsersConfig',
@@ -321,7 +326,7 @@ DEFAULT_FILE_STORAGE = 'yk_mall.utils.fastdfs.fdfs_storage.FastDFSStorage'
 FDFS_URL = 'http://image.meiduo.site:8888/'
 FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
 
-
+print(FDFS_CLIENT_CONF)
 # 富文本编辑器ckeditor配置
 CKEDITOR_CONFIGS = {
     'default': {

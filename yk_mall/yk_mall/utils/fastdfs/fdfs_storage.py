@@ -9,6 +9,7 @@ from fdfs_client.client import Fdfs_client
 class FastDFSStorage(Storage):
     """FDFS文件存储类"""
     def __init__(self, base_url=None, client_conf=None):
+        print(323232323)
         """
         初始化
         base_url: 用于构造图片完整路径使用，图片服务器的域名
@@ -26,6 +27,7 @@ class FastDFSStorage(Storage):
 
     # TODO 关于图片的url
     def _save(self, name, content):
+        print("1111111111111111111111")
         """
         name: 用户选择上传文件的名称: 1.jpg
         content: 包含上传文件内容的File对象，通过content.read()获取上传文件内容
@@ -62,5 +64,6 @@ class FastDFSStorage(Storage):
         返回可访问到文件的完整的url地址:
         name: 表中图片字段存放的内容
         """
+
         return self.base_url + name
 

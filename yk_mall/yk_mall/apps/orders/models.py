@@ -54,6 +54,9 @@ class OrderInfo(BaseModel):
         verbose_name_plural = verbose_name
 
 
+    def __str__(self):
+        return str(self.user)+"@"+self.get_pay_method_display()+"@"+self.get_status_display()+"@"+str(self.address)
+
 class OrderGoods(BaseModel):
     """
     订单商品
@@ -79,3 +82,8 @@ class OrderGoods(BaseModel):
         db_table = "tb_order_goods"
         verbose_name = '订单商品'
         verbose_name_plural = verbose_name
+
+
+
+    def __str__(self):
+        return self.sku.name+str(self.count)
