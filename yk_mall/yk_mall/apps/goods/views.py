@@ -4,16 +4,20 @@ from rest_framework.generics import ListAPIView, GenericAPIView
 from rest_framework.mixins import ListModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
+
 from rest_framework.filters import OrderingFilter
+from drf_haystack.viewsets import HaystackViewSet
+from rest_framework_extensions.cache.mixins import ListCacheResponseMixin
 
 from . import serializers
-from .models import SKU
+from .models import SKU, GoodsCategory
 from .serializers import SKUSerializer, SKUIndexSerializer, OrderGoodsSerializer
 from orders.models import OrderGoods, OrderInfo
+from . import constants
+
 
 # GET /orders/user/
-class UserOrdersView(ListModelMixin,GenericViewSet):
+class UserOrdersView(ListModelMixin,GenericAPIView):
     # 添加认证,登录用户才可以访问
     permission_classes = [IsAuthenticated]
     # 指定序列化器类
@@ -83,10 +87,8 @@ class SKUListView(ListAPIView):
         category_id = self.kwargs['category_id']
         print(category_id)
         s =  SKU.objects.filter(category_id=category_id,is_launched=True)
-        print(s)
         return s
 
-from drf_haystack.viewsets import HaystackViewSet
 
 class SKUSearchViewSet(HaystackViewSet):
     """
@@ -95,3 +97,45 @@ class SKUSearchViewSet(HaystackViewSet):
     index_models = [SKU]
 
     serializer_class = SKUIndexSerializer
+
+
+class CategoryView(GenericAPIView):
+    """
+    类别
+    """
+    queryset = GoodsCategory.objects.all()
+
+    def get(self, request, pk=None):
+        ret = dict(
+            cat1='',
+            cat2='',
+            cat3=''
+        )
+        category = self.get_object()
+        if category.parent is None:
+            # 当前类别为一级类别
+            ret['cat1'] = serializers.ChannelSerializer(category.goodschannel_set.all()[0]).data
+        elif category.goodscategory_set.count() == 0:
+            # 当前类别为三级
+            ret['cat3'] = serializers.CategorySerializer(category).data
+            cat2 = category.parent
+            ret['cat2'] = serializers.CategorySerializer(cat2).data
+            ret['cat1'] = serializers.ChannelSerializer(cat2.parent.goodschannel_set.all()[0]).data
+        else:
+            # 当前类别为二级
+            ret['cat2'] = serializers.CategorySerializer(category).data
+            ret['cat1'] = serializers.ChannelSerializer(category.parent.goodschannel_set.all()[0]).data
+
+        return Response(ret)
+
+
+class HotSKUListView(ListCacheResponseMixin, ListAPIView):
+    """
+    热销商品, 使用缓存扩展
+    """
+    serializer_class = SKUSerializer
+    pagination_class = None
+
+    def get_queryset(self):
+        category_id = self.kwargs['category_id']
+        return SKU.objects.filter(category_id=category_id, is_launched=True).order_by('-sales')[0:constants.HOT_SKUS_COUNT_LIMIT]

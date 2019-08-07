@@ -1,3 +1,3 @@
 #! /bin/bash
 
-mysql -uroot -pmysql yk_mall < goods_data.sql;
+mysql -uroot -pmysql lqmall < goods_data.sql;

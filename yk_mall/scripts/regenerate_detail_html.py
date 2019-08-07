@@ -102,4 +102,5 @@ if __name__ == '__main__':
     skus = SKU.objects.all()
     for sku in skus:
         print(sku.id)
-        generate_static_sku_detail_html(sku.id)
+        s = generate_static_sku_detail_html(sku.id)
+        print(s)

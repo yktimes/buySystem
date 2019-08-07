@@ -2,7 +2,7 @@ from rest_framework import serializers
 from drf_haystack.serializers import HaystackSerializer
 
 from .search_indexes import SKUIndex
-from .models import SKU
+from .models import SKU , GoodsCategory, GoodsChannel
 from orders.models import OrderGoods, OrderInfo
 
 
@@ -53,3 +53,23 @@ class OrderGoodsSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderInfo
         fields = ('create_time', 'order_id', 'total_amount', 'pay_method', 'status', 'skus', 'freight')
+
+class CategorySerializer(serializers.ModelSerializer):
+    """
+    类别序列化器
+    """
+    class Meta:
+        model = GoodsCategory
+        fields = ('id', 'name')
+
+
+class ChannelSerializer(serializers.ModelSerializer):
+    """
+    频道序列化器
+    """
+    category = CategorySerializer()
+
+    class Meta:
+        model = GoodsChannel
+        fields = ('category', 'url')
+

@@ -27,8 +27,8 @@ class SKUAdmin(object):
     """商品Admin管理类"""
     model_icon = 'fa fa-gift'
     list_display = ['id', 'name', 'price', 'stock','is_launched', 'sales', 'comments']
-    search_fields = ['id','name']
-    list_filter = ['category','is_launched']
+    search_fields = ['id','name','stock']
+    list_filter = ['category','is_launched','stock']
     list_editable = ['price', 'stock','is_launched']
     show_detail_fields = ['name']
     readonly_fields = ['sales', 'comments']
@@ -39,6 +39,23 @@ class SKUAdmin(object):
         "sales_count": {'title': '销量', "x-field": "id", "y-field": ('sales',),
                         },
     }
+
+    # def save_models(self):
+    #     # 保存数据对象
+    #     obj = self.new_obj
+    #     obj.save()
+    #
+    #     from celery_tasks.html.tasks import generate_static_sku_detail_html
+    #     generate_static_sku_detail_html.delay(obj.sku.id)
+    #
+    # def delete_model(self):
+    #     # 删除数据对象
+    #     obj = self.obj
+    #     sku_id = obj.sku.id
+    #     obj.delete()
+    #
+    #     from celery_tasks.html.tasks import generate_static_sku_detail_html
+    #     generate_static_sku_detail_html.delay(sku_id)
 
 class SKUSpecificationAdmin(object):
     model_icon = 'fa fa-gift'
@@ -73,6 +90,15 @@ class SKUImageAdmin(object):
     list_filter = ['sku']
     list_editable = ['image']
     show_detail_fields = ['sku', 'image']
+
+    def save_models(self):
+        # 保存数据对象
+        obj = self.new_obj
+
+        obj.save() # 保存后才能获得  FDFS的图片地址
+        obj.sku.default_image_url = obj.image.url
+        obj.sku.save()
+
 
 class GoodsAdmin(object):
     """Goods Admin管理类"""

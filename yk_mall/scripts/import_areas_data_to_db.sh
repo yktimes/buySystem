@@ -1,3 +1,3 @@
 #!/bin/bash
 
-mysql -uroot -pmysql yk_mall< areas.sql;
+mysql -uroot -pmysql lqmall< areas.sql;

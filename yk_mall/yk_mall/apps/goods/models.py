@@ -45,7 +45,7 @@ class Brand(BaseModel):
     品牌
     """
     name = models.CharField(max_length=20, verbose_name='名称')
-    logo = models.ImageField(verbose_name='Logo图片')
+    logo = models.ImageField(verbose_name='Logo图片',blank=True,null=True)
     first_letter = models.CharField(max_length=1, verbose_name='品牌首字母')
 
     class Meta:

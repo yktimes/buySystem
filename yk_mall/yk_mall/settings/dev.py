@@ -103,7 +103,7 @@ DATABASES = {
         'PORT': 3306,  # 数据库端口
         'USER': 'root',  # 数据库用户名
         'PASSWORD': 'mysql',  # 数据库用户密码
-        'NAME': 'yk_mall'  # 数据库名字
+        'NAME': 'lqmall'  # 数据库名字
     }
 }
 
@@ -353,7 +353,7 @@ CRONJOBS = [
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
-        'URL': 'http://47.94.253.97:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
+        'URL': 'http://139.155.79.84:9200/',  # 此处为elasticsearch运行的服务器ip地址，端口号固定为9200
         'INDEX_NAME': 'yk_shop',  # 指定elasticsearch建立的索引库的名称
     },
 }
