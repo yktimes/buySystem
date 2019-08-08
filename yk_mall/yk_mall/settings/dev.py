@@ -55,6 +55,7 @@ INSTALLED_APPS = [
     'carts.apps.CartsConfig',
     'orders.apps.OrdersConfig',
     'payment.apps.PaymentConfig',
+
     'haystack',
     'ckeditor',  # 富文本编辑器
     'ckeditor_uploader',  # 富文本编辑器上传图片模块
@@ -323,7 +324,7 @@ REST_FRAMEWORK_EXTENSIONS = {
 DEFAULT_FILE_STORAGE = 'yk_mall.utils.fastdfs.fdfs_storage.FastDFSStorage'
 
 # FastDFS
-FDFS_URL = 'http://image.meiduo.site:8888/'
+FDFS_URL = 'http://139.155.79.84:8888/'
 FDFS_CLIENT_CONF = os.path.join(BASE_DIR, 'utils/fastdfs/client.conf')
 
 print(FDFS_CLIENT_CONF)

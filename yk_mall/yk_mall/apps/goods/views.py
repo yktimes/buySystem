@@ -8,7 +8,7 @@ from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from drf_haystack.viewsets import HaystackViewSet
 from rest_framework_extensions.cache.mixins import ListCacheResponseMixin
-
+from rest_framework.viewsets import GenericViewSet
 from . import serializers
 from .models import SKU, GoodsCategory
 from .serializers import SKUSerializer, SKUIndexSerializer, OrderGoodsSerializer
@@ -17,7 +17,7 @@ from . import constants
 
 
 # GET /orders/user/
-class UserOrdersView(ListModelMixin,GenericAPIView):
+class UserOrdersView(ListModelMixin,GenericViewSet):
     # 添加认证,登录用户才可以访问
     permission_classes = [IsAuthenticated]
     # 指定序列化器类

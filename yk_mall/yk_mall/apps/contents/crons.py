@@ -9,6 +9,8 @@ from goods.models import GoodsChannel
 from contents.models import ContentCategory
 
 
+from .serializers import *
+
 def generate_static_index_html():
 
     """
@@ -48,13 +50,15 @@ def generate_static_index_html():
             cat2.sub_cats = []
             for cat3 in cat2.goodscategory_set.all():
                 cat2.sub_cats.append(cat3)
-            categories[group_id]['sub_cats'].append(cat2)
+            categories[group_id]['sub_cats'].append(cat2.name)
 
     # 广告内容
     contents = {}
     content_categories = ContentCategory.objects.all()
     for cat in content_categories:
-        contents[cat.key] = cat.content_set.filter(status=True).order_by('sequence')
+        contents[cat.key] = ContentSerializer(cat.content_set.filter(status=True).order_by('sequence'),many=True).data
+
+
 
     url = settings.FDFS_URL
     # 使用index.html模板文件，进行模板渲染，产生替换之后的内容
@@ -64,6 +68,7 @@ def generate_static_index_html():
         'url':url
     }
 
+    print(context)
     # 1. 加载模板文件: 指定使用的模板文件，获取模板对象
 
     temp = loader.get_template('index.html')

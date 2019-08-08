@@ -24,7 +24,7 @@ from xadmin.plugins import xversion
 xversion.register_models()
 from django.urls import path
 
-
+from contents.views import IndexView
 
 urlpatterns = [
     url(r'^ckeditor/', include('ckeditor_uploader.urls')),
@@ -39,6 +39,7 @@ urlpatterns = [
     url(r'^', include('orders.urls')),
     url(r'^', include('payment.urls')),
     url(r'^oauth/', include('oauth.urls')),
+    url(r'index/', IndexView.as_view()),
 
 
 
